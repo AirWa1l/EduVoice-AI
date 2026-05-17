@@ -1,0 +1,21 @@
+# Front
+Front/node_modules/
+Front/eduvoice-front/node_modules/
+Front/dist/
+Front/eduvoice-front/dist/
+
+# Back
+Back/venv/
+Back/.venv/
+Front/venv/
+Front/.venv/
+
+# Env
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Vite
+dist/
