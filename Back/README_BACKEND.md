@@ -98,132 +98,217 @@ docker-compose up backend
 
 ## Endpoints
 
-### POST /api/voice/process
-Procesa una consulta de voz completa
+### Voice API Endpoints (`/api/voice/`)
 
-**Request:**
+#### 1. POST `/api/voice/process` - Process Voice
+**Endpoint principal para procesamiento de conversaciones por voz**
+
+**Descripción:**
+Recibe texto transcrito del frontend, lo procesa con un modelo de lenguaje (Google Gemini), y retorna una respuesta sintetizada en audio (Eleven Labs).
+
+**Flujo de procesamiento:**
+1. Recibe texto transcrito del frontend
+2. Limpia y valida el texto
+3. Procesa la consulta con LLM (Google Gemini API)
+4. Sintetiza la respuesta a audio (Eleven Labs API)
+5. Retorna el audio y texto de respuesta al frontend
+
+**Request (application/json):**
 ```json
 {
-  "text": "¿Cuáles son los requisitos para cambiar de programa?",
-  "session_id": "session_123",
-  "user_id": "user_456"
+  "session_id": "session_12345",
+  "text": "¿Cuáles son los requisitos para cambiar de programa académico?",
+  "user_id": "user_67890"
 }
 ```
 
-**Response:**
+**Parameters:**
+- `session_id` (string): Identificador único de la sesión de conversación
+- `text` (string): Texto transcrito por el usuario a procesar
+- `user_id` (string): Identificador único del usuario
+
+**Response (200 - Success, application/json):**
 ```json
 {
-  "text_response": "Para cambiar de programa académico, debe contactar a la oficina de registro y presentar...",
-  "audio_url": "data:audio/mp3;base64,//NExAAeGJFJACAA...",
   "status": "success",
-  "error_message": null,
+  "text_response": "Para cambiar de programa académico, debe contactar a la oficina de registro...",
+  "audio_url": "data:audio/mp3;base64,//NExAAeGJFJACAA...",
   "latency_ms": 3456.78,
   "timestamp": "2026-05-17T10:30:00"
 }
 ```
 
-### GET /api/voice/health
-Verifica que todos los servicios estén operacionales
+**Response Fields:**
+- `status` (string): Estado del procesamiento ("success", "error")
+- `text_response` (string): Respuesta en texto generada por el LLM
+- `audio_url` (string): URL o data URL con audio en formato MP3 (base64 encoded)
+- `latency_ms` (float): Tiempo de procesamiento en milisegundos
+- `timestamp` (string): Fecha y hora de procesamiento (ISO 8601)
 
-**Response:**
+**Error Codes:**
+- `422 Validation Error`: Validación fallida en los parámetros enviados
+- `500 Internal Server Error`: Error en el procesamiento (servicios LLM/TTS no disponibles)
+
+---
+
+#### 2. GET `/api/voice/health` - Health Check
+**Verificación del estado de los servicios**
+
+**Descripción:**
+Valida que todos los servicios del backend estén operacionales. Verifica la conectividad con:
+- Google Gemini API
+- Eleven Labs API
+- Base de datos (si aplica)
+
+**Request:**
+Sin parámetros
+
+**Response (200 - Success, application/json):**
 ```json
 {
   "status": "healthy",
   "services": {
-    "llm": "ok",
-    "tts": "ok"
+    "gemini_api": "connected",
+    "eleven_labs_api": "connected",
+    "database": "connected"
   }
 }
 ```
 
-### GET /api/voice/
-Información general de la API
+**Uso:**
+- Monitoreo continuo de la disponibilidad del API
+- Alertas de salud del sistema
+- Verificación antes de procesar conversaciones
+
+---
+
+#### 3. GET `/api/voice/` - Voice Root
+**Endpoint raíz de la API de voz**
+
+**Descripción:**
+Endpoint raíz que retorna información general sobre la API de voz.
+
+**Request:**
+Sin parámetros
+
+**Response (200 - Success, application/json):**
+```json
+{
+  "message": "Voice API Root - See /docs for API documentation",
+  "version": "0.1.0"
+}
+```
+
+---
+
+### General Endpoints
+
+#### 4. GET `/health` - Health Check General
+**Verificación de salud general del backend**
+
+Verifica que el servidor FastAPI esté corriendo correctamente.
+
+---
+
+#### 5. GET `/` - Root
+**Endpoint raíz del backend**
+
+Retorna información general del servidor.
+
+---
+
+## Modelos Pydantic
+
+### VoiceRequest
+Modelo para validar las solicitudes al endpoint `/api/voice/process`:
+
+```python
+class VoiceRequest(BaseModel):
+    session_id: str  # Identificador de sesión único
+    text: str        # Texto a procesar (mínimo 1 carácter)
+    user_id: str     # Identificador del usuario
+```
+
+### VoiceResponse
+Modelo para la respuesta del endpoint `/api/voice/process`:
+
+```python
+class VoiceResponse(BaseModel):
+    status: str           # "success" o "error"
+    text_response: str    # Respuesta generada por LLM
+    audio_url: str        # Data URL con audio en base64
+    latency_ms: float     # Tiempo de procesamiento
+    timestamp: str        # Timestamp ISO 8601
+```
+
+---
+
+## Arquitectura de Servicios
+
+### LLM Service (`services/llm_service.py`)
+- **Función**: Procesa texto usando Google Gemini API
+- **Modelos soportados**: Gemini Pro
+- **Salida**: Respuesta en texto contextualizada
+
+### TTS Service (`services/tts_service.py`)
+- **Función**: Sintetiza texto a audio usando Eleven Labs
+- **Salida**: Audio en formato MP3 (base64 encoded)
+- **Voces disponibles**: Configurables via `ELEVEN_LABS_VOICE_ID`
+
+### Text Processor (`services/text_processor.py`)
+- **Función**: Limpia, valida y preprocesa texto
+- **Validaciones**: Largo mínimo, caracteres especiales, idioma
+
+---
+
+## Variables de Entorno Requeridas
+
+```env
+# Google Gemini API
+GEMINI_API_KEY=tu_api_key_aqui
+
+# Eleven Labs API
+ELEVEN_LABS_API_KEY=tu_api_key_aqui
+ELEVEN_LABS_VOICE_ID=voice_id_opcional  # Ej: "21m00Tcm4TlvDq8ikWAM"
+
+# Configuración de servidor (opcional)
+HOST=0.0.0.0
+PORT=8000
+DEBUG=False
+```
+
+---
 
 ## Testing
 
-### Ejecutar todos los tests
+### Ejecutar tests
 ```bash
-pytest app/tests/ -v
+cd Back
+pytest tests/ -v
 ```
 
-### Ejecutar tests con cobertura
+### Probar endpoints manualmente
 ```bash
-pytest app/tests/ --cov=app --cov-report=html
+# Health check
+curl http://localhost:8000/api/voice/health
+
+# Procesar voz
+curl -X POST http://localhost:8000/api/voice/process \
+  -H "Content-Type: application/json" \
+  -d '{
+    "session_id": "test_session",
+    "text": "¿Cuál es la fecha del próximo parcial?",
+    "user_id": "test_user"
+  }'
 ```
 
-### Test específico
-```bash
-pytest app/tests/test_voice_api.py::TestVoiceAPI::test_voice_process_success -v
-```
+---
 
-## Componentes Principales
+## Documentación Interactiva
 
-### TextProcessor (`voice/services/text_processor.py`)
-- Limpia y valida texto de entrada
-- Elimina caracteres especiales
-- Verifica longitud máxima
-- Normaliza espacios en blanco
-
-### LLMService (`voice/services/llm_service.py`)
-- Integración con Google Gemini API
-- Contexto especializado para orientación académica
-- Manejo de errores de API
-- Validación de conexión
-
-### TTSService (`voice/services/tts_service.py`)
-- Integración con Eleven Labs API
-- Conversión de texto a audio (mpeg)
-- Codificación en base64 para transmisión
-- Manejo de timeouts y errores
-
-### VoiceRouter (`voice/routes.py`)
-- Endpoint POST /api/voice/process
-- Orquesta los 3 servicios (text → LLM → TTS)
-- Medición de latencia
-- Manejo de errores integral
-
-## Flujo de Procesamiento
-
-```
-1. Frontend envía texto transcrito → POST /api/voice/process
-   ↓
-2. TextProcessor: Limpia y valida
-   ↓
-3. LLMService: Consulta Gemini API
-   ↓
-4. TTSService: Sintetiza audio
-   ↓
-5. Response: {text, audio, latency, status}
-   ↓
-6. Frontend: Muestra texto + reproduce audio
-```
-
-## Métricas Medidas
-
-- **Latencia Total**: Tiempo end-to-end
-- **Latencia LLM**: Tiempo de respuesta de Gemini
-- **Latencia TTS**: Tiempo de síntesis de voz
-- **Bytes de Audio**: Tamaño del archivo generado
-
-## Manejo de Errores
-
-La API retorna códigos HTTP estándar:
-- **200**: Éxito
-- **400**: Validación fallida (texto inválido)
-- **500**: Error del servidor (API externa)
-- **503**: Servicio no disponible
-
-## Siguientes Pasos (Sprint 2)
-
-- [ ] Optimización de latencia
-- [ ] Context management (sesiones)
-- [ ] Prompt engineering avanzado
-- [ ] Rate limiting
-- [ ] Caching de respuestas
-- [ ] Logging detallado
-- [ ] Tests adicionales (objetivo: 50% cobertura)
-- [ ] Documentación OpenAPI completa
-- [ ] Despliegue en cloud (Render/Railway)
+- **Swagger UI**: http://localhost:8000/docs
+- **ReDoc**: http://localhost:8000/redoc
+- **OpenAPI JSON**: http://localhost:8000/openapi.json
 
 ## Referencias
 
