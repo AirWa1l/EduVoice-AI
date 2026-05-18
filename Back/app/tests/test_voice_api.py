@@ -9,9 +9,9 @@ import sys
 import os
 
 # Add app directory to path
-sys.path.insert(0, os.path.dirname(__file__) + "/..")
+sys.path.insert(0, os.path.dirname(__file__) + "/../..")
 
-from main import app
+from app.main import app
 
 client = TestClient(app)
 
@@ -40,8 +40,8 @@ class TestVoiceAPI:
         assert "name" in data
         assert "endpoints" in data
     
-    @patch('voice.services.llm_service.llm_service.query')
-    @patch('voice.services.tts_service.tts_service.synthesize')
+    @patch('app.voice.services.llm_service.llm_service.query')
+    @patch('app.voice.services.tts_service.tts_service.synthesize')
     def test_voice_process_success(self, mock_tts, mock_llm):
         """Test successful voice processing"""
         # Mock LLM response
@@ -100,7 +100,7 @@ class TestVoiceAPI:
         # Should fail validation
         assert response.status_code == 422
     
-    @patch('voice.services.llm_service.llm_service.query')
+    @patch('app.voice.services.llm_service.llm_service.query')
     def test_voice_process_llm_error(self, mock_llm):
         """Test voice processing when LLM fails"""
         # Mock LLM error
@@ -126,7 +126,7 @@ class TestTextProcessor:
     
     def test_text_processor_clean(self):
         """Test text cleaning"""
-        from voice.services.text_processor import text_processor
+        from app.voice.services.text_processor import text_processor
         
         dirty_text = "  ¿Hola   mundo?  "
         cleaned = text_processor.clean_text(dirty_text)
@@ -135,7 +135,7 @@ class TestTextProcessor:
     
     def test_text_processor_validate_empty(self):
         """Test validation of empty text"""
-        from voice.services.text_processor import text_processor
+        from app.voice.services.text_processor import text_processor
         
         is_valid, error_msg = text_processor.validate_text("")
         
@@ -144,7 +144,7 @@ class TestTextProcessor:
     
     def test_text_processor_validate_too_long(self):
         """Test validation of text exceeding max length"""
-        from voice.services.text_processor import text_processor
+        from app.voice.services.text_processor import text_processor
         
         long_text = "a" * 501
         is_valid, error_msg = text_processor.validate_text(long_text)
@@ -154,7 +154,7 @@ class TestTextProcessor:
     
     def test_text_processor_process_success(self):
         """Test successful text processing"""
-        from voice.services.text_processor import text_processor
+        from app.voice.services.text_processor import text_processor
         
         text = "  ¿Hola mundo?  "
         processed, is_valid = text_processor.process(text)
@@ -168,7 +168,7 @@ class TestConfig:
     
     def test_settings_validate_missing_keys(self):
         """Test that settings validation catches missing API keys"""
-        from config import Settings
+        from app.config import Settings
         
         settings_test = Settings()
         settings_test.GEMINI_API_KEY = ""

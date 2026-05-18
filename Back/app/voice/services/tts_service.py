@@ -4,12 +4,17 @@ Converts text responses to speech audio
 """
 import logging
 import requests
-import base64
+import uuid
 from typing import Dict, Optional
-from config import settings
+from app.config import settings
 import time
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
+
+# Audio storage directory
+AUDIO_DIR = Path(__file__).parent.parent.parent / "static" / "audio"
+AUDIO_DIR.mkdir(parents=True, exist_ok=True)
 
 
 class TTSService:
@@ -52,7 +57,7 @@ class TTSService:
             
             payload = {
                 "text": text,
-                "model_id": "eleven_monolingual_v1",
+                "model_id": "eleven_flash_v2_5",
                 "voice_settings": {
                     "stability": 0.5,
                     "similarity_boost": 0.75
@@ -78,18 +83,23 @@ class TTSService:
                     "latency_ms": (time.time() - start_time) * 1000
                 }
             
-            # Convert audio to base64 for easier transmission
+            # Save audio to file
             audio_content = response.content
-            audio_base64 = base64.b64encode(audio_content).decode('utf-8')
-            audio_data_url = f"data:audio/mpeg;base64,{audio_base64}"
+            audio_filename = f"audio_{uuid.uuid4().hex[:8]}.mp3"
+            audio_path = AUDIO_DIR / audio_filename
+            
+            with open(audio_path, 'wb') as f:
+                f.write(audio_content)
+            
+            audio_url = f"/audio/{audio_filename}"
             
             processing_time = (time.time() - start_time) * 1000  # ms
             
-            logger.info(f"Audio synthesized successfully in {processing_time:.2f}ms")
+            logger.info(f"Audio synthesized successfully in {processing_time:.2f}ms - Saved to {audio_url}")
             
             return {
                 "status": "success",
-                "audio_data": audio_data_url,
+                "audio_data": audio_url,
                 "audio_bytes": len(audio_content),
                 "latency_ms": processing_time,
                 "voice_id": voice_id

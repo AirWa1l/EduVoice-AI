@@ -8,11 +8,11 @@ import logging
 import time
 import uuid
 
-from voice.models import VoiceRequest, VoiceResponse, ErrorResponse
-from voice.services.text_processor import text_processor
-from voice.services.llm_service import llm_service
-from voice.services.tts_service import tts_service
-from config import settings
+from app.voice.models import VoiceRequest, VoiceResponse, ErrorResponse
+from app.voice.services.text_processor import text_processor
+from app.voice.services.llm_service import llm_service
+from app.voice.services.tts_service import tts_service
+from app.config import settings
 
 logger = logging.getLogger(__name__)
 
