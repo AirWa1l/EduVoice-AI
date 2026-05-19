@@ -1,4 +1,5 @@
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
+import { useSpeechToText } from './useSpeechToText.js'
 
 const SUGGESTIONS = [
   '¿Qué materias debo tomar este semestre?',
@@ -23,10 +24,31 @@ export function useConversationUI() {
   const status = ref('idle')
   const errorMessage = ref('')
 
+  // Integración con Speech-to-Text
+  const { transcript, isListening, error: sttError, startListening, stopListening } = useSpeechToText()
+
   const isEmpty = computed(() => messages.value.length === 0)
-  const isRecording = computed(() => status.value === 'recording')
+  const isRecording = computed(() => isListening.value)
   const isLoading = computed(() => status.value === 'loading')
   const hasError = computed(() => status.value === 'error' && Boolean(errorMessage.value))
+
+  // Cuando termina la grabación, agregar transcript al draft
+  watch(isListening, (newVal) => {
+    if (!newVal && transcript.value) {
+      // Se terminó la grabación
+      draft.value = transcript.value
+      console.log('Transcript added to draft:', transcript.value)
+    }
+  })
+
+  // Mostrar errores de STT
+  watch(sttError, (newError) => {
+    if (newError) {
+      errorMessage.value = newError
+      status.value = 'error'
+      console.error('STT Error:', newError)
+    }
+  })
 
   function clearError() {
     errorMessage.value = ''
@@ -74,16 +96,21 @@ export function useConversationUI() {
     clearError()
     if (isLoading.value) return
 
-    if (isRecording.value) {
-      const text = draft.value.trim() || 'Consulta por voz'
-      submitUserQuery(text)
-      return
+    if (isListening.value) {
+      // Detener grabación
+      stopListening()
+      // El watch se encargará de actualizar el draft
+    } else {
+      // Iniciar grabación
+      draft.value = ''
+      startListening()
     }
-
-    status.value = 'recording'
   }
 
   function sendMessage() {
+    if (isListening.value) {
+      stopListening()
+    }
     submitUserQuery(draft.value)
   }
 
