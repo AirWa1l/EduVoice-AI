@@ -67,8 +67,12 @@ async def process_voice(request: VoiceRequest):
         
         llm_response = llm_result.get("response", "")
         
-        # Step 3: Synthesize to speech
-        tts_result = tts_service.synthesize(llm_response)
+        # Step 3: Synthesize to speech and store in Firebase
+        tts_result = tts_service.synthesize(
+            llm_response,
+            user_id=request.user_id,
+            session_id=request.session_id
+        )
         
         if tts_result.get("status") != "success":
             logger.error(f"TTS synthesis failed: {tts_result.get('error')}")
