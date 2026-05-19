@@ -16,8 +16,15 @@ class FirebaseStorageService:
     
     def __init__(self):
         """Initialize Firebase Storage Service"""
-        self.bucket = get_storage_bucket()
+        self._bucket = None
         self.base_path = "audios"
+    
+    @property
+    def bucket(self):
+        """Lazy initialization of Firebase bucket"""
+        if self._bucket is None:
+            self._bucket = get_storage_bucket()
+        return self._bucket
     
     def upload_audio(
         self, 
