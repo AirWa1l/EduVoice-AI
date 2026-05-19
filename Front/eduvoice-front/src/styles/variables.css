@@ -1,0 +1,47 @@
+:root {
+  --color-primary: #7c3aed;
+  --color-primary-dark: #6d28d9;
+  --color-primary-light: #ede9fe;
+
+  --color-user-bubble: #3b82f6;
+  --color-user-bubble-dark: #2563eb;
+
+  --color-send: #60a5fa;
+  --color-send-hover: #3b82f6;
+
+  --color-success: #10b981;
+  --color-success-bg: #d1fae5;
+  --color-success-border: #6ee7b7;
+
+  --color-recording: #ef4444;
+  --color-recording-bg: #fef2f2;
+  --color-recording-border: #fecaca;
+  --color-recording-soft: #fca5a5;
+
+  --color-error: #dc2626;
+  --color-error-bg: #fef2f2;
+  --color-error-border: #fecaca;
+
+  --color-bg: #f3f4f6;
+  --color-surface: #ffffff;
+  --color-border: #e5e7eb;
+  --color-border-strong: #d1d5db;
+
+  --color-text: #111827;
+  --color-text-secondary: #6b7280;
+  --color-text-muted: #9ca3af;
+
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --shadow-md: 0 4px 14px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 10px 30px rgba(15, 23, 42, 0.1);
+
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
+  --radius-full: 9999px;
+
+  --layout-max: 920px;
+  --header-height: auto;
+  --font-family: Inter, "Segoe UI", system-ui, -apple-system, sans-serif;
+}
