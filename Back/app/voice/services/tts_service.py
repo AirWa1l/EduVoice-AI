@@ -1,20 +1,15 @@
 """
 TTS Service - Integration with Eleven Labs API
-Converts text responses to speech audio
+Converts text responses to speech audio and stores in Firebase Storage
 """
 import logging
 import requests
-import uuid
 from typing import Dict, Optional
 from app.config import settings
+from app.voice.services.firebase_storage_service import firebase_storage
 import time
-from pathlib import Path
 
 logger = logging.getLogger(__name__)
-
-# Audio storage directory
-AUDIO_DIR = Path(__file__).parent.parent.parent / "static" / "audio"
-AUDIO_DIR.mkdir(parents=True, exist_ok=True)
 
 
 class TTSService:
@@ -38,16 +33,18 @@ class TTSService:
             "Content-Type": "application/json"
         }
     
-    def synthesize(self, text: str, voice_id: Optional[str] = None) -> Dict:
+    def synthesize(self, text: str, voice_id: Optional[str] = None, user_id: Optional[str] = None, session_id: Optional[str] = None) -> Dict:
         """
-        Synthesize text to speech
+        Synthesize text to speech and upload to Firebase Storage
         
         Args:
             text: Text to convert to speech
             voice_id: Optional voice ID override
+            user_id: Optional user ID for organization in Firebase
+            session_id: Optional session ID for tracking
             
         Returns:
-            Dictionary with audio data and metadata
+            Dictionary with audio URL and metadata
         """
         try:
             start_time = time.time()
@@ -64,7 +61,7 @@ class TTSService:
                 }
             }
             
-            logger.info(f"Synthesizing text: {text[:50]}... with voice {voice_id}")
+            logger.info(f"🎙️ Synthesizing text: {text[:50]}... with voice {voice_id}")
             
             response = requests.post(
                 url,
@@ -75,7 +72,7 @@ class TTSService:
             
             if response.status_code != 200:
                 error_msg = response.json().get("detail", {}).get("message", "Unknown error")
-                logger.error(f"TTS API error: {response.status_code} - {error_msg}")
+                logger.error(f"❌ TTS API error: {response.status_code} - {error_msg}")
                 return {
                     "status": "error",
                     "audio_data": None,
@@ -83,30 +80,42 @@ class TTSService:
                     "latency_ms": (time.time() - start_time) * 1000
                 }
             
-            # Save audio to file
+            # Get audio content
             audio_content = response.content
-            audio_filename = f"audio_{uuid.uuid4().hex[:8]}.mp3"
-            audio_path = AUDIO_DIR / audio_filename
             
-            with open(audio_path, 'wb') as f:
-                f.write(audio_content)
+            # Upload to Firebase Storage
+            logger.info(f"📤 Uploading audio to Firebase Storage...")
+            upload_result = firebase_storage.upload_audio(
+                audio_content,
+                user_id=user_id,
+                session_id=session_id
+            )
             
-            audio_url = f"/audio/{audio_filename}"
+            if upload_result["status"] != "success":
+                logger.error(f"❌ Firebase upload failed: {upload_result.get('error')}")
+                return {
+                    "status": "error",
+                    "audio_data": None,
+                    "error": f"Firebase upload failed: {upload_result.get('error')}",
+                    "latency_ms": (time.time() - start_time) * 1000
+                }
             
             processing_time = (time.time() - start_time) * 1000  # ms
+            audio_url = upload_result["url"]
             
-            logger.info(f"Audio synthesized successfully in {processing_time:.2f}ms - Saved to {audio_url}")
+            logger.info(f"✅ Audio synthesized and stored in {processing_time:.2f}ms | URL: {audio_url}")
             
             return {
                 "status": "success",
                 "audio_data": audio_url,
                 "audio_bytes": len(audio_content),
                 "latency_ms": processing_time,
-                "voice_id": voice_id
+                "voice_id": voice_id,
+                "storage_path": upload_result.get("path")
             }
         
         except requests.exceptions.RequestException as e:
-            logger.error(f"TTS request error: {str(e)}")
+            logger.error(f"❌ TTS request error: {str(e)}")
             return {
                 "status": "error",
                 "audio_data": None,
@@ -114,7 +123,7 @@ class TTSService:
                 "latency_ms": (time.time() - start_time) * 1000
             }
         except Exception as e:
-            logger.error(f"TTS processing error: {str(e)}")
+            logger.error(f"❌ TTS processing error: {str(e)}")
             return {
                 "status": "error",
                 "audio_data": None,
