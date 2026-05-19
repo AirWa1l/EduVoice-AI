@@ -34,8 +34,9 @@ import AppFooter from './layout/AppFooter.vue'
 import ChatView from './chat/ChatView.vue'
 import InputPanel from './input/InputPanel.vue'
 import { useConversationUI } from '../composables/useConversationUI.js'
+import { computed } from 'vue'
 
-defineProps({
+const props = defineProps({
   user: {
     type: Object,
     default: null,
@@ -43,6 +44,9 @@ defineProps({
 })
 
 const emit = defineEmits(['logout'])
+
+// Obtener el ID del usuario autenticado
+const userId = computed(() => props.user?.id || null)
 
 const {
   messages,
@@ -53,11 +57,12 @@ const {
   isLoading,
   hasError,
   errorMessage,
+  isPlaying,
   applySuggestion,
   toggleRecording,
   sendMessage,
   dismissError,
-} = useConversationUI()
+} = useConversationUI(userId.value)
 
 function handleLogout() {
   emit('logout')
