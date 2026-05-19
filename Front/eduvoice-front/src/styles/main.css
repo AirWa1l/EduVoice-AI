@@ -1,4 +1,5 @@
 @import './variables.css';
+@import './gradient-background.css';
 
 * {
   box-sizing: border-box;

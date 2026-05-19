@@ -1,5 +1,8 @@
 <template>
   <header class="app-header">
+    <div class="app-header__glow app-header__glow--one" aria-hidden="true" />
+    <div class="app-header__glow app-header__glow--two" aria-hidden="true" />
+
     <div class="app-header__inner">
       <div class="app-header__brand">
         <img class="app-header__logo" :src="logoUrl" alt="Logo de EduVoice" />

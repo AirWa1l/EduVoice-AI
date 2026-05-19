@@ -1,54 +1,16 @@
 <template>
-  <div class="app-shell">
-    <AppHeader />
-
-    <main class="app-shell__main">
-      <ChatView
-        :messages="messages"
-        :suggestions="suggestions"
-        :is-empty="isEmpty"
-        :is-recording="isRecording"
-        :is-loading="isLoading"
-        :has-error="hasError"
-        :error-message="errorMessage"
-        @select-suggestion="applySuggestion"
-        @dismiss-error="dismissError"
-      />
-
-      <InputPanel
-        v-model="draft"
-        :is-recording="isRecording"
-        :is-loading="isLoading"
-        @toggle-record="toggleRecording"
-        @send="sendMessage"
-      />
-    </main>
-
-    <AppFooter />
-  </div>
+  <LoginView v-if="!isAuthenticated" @login="handleLogin" />
+  <AppMain v-else />
 </template>
 
 <script setup>
-import AppHeader from './components/layout/AppHeader.vue'
-import AppFooter from './components/layout/AppFooter.vue'
-import ChatView from './components/chat/ChatView.vue'
-import InputPanel from './components/input/InputPanel.vue'
-import { useConversationUI } from './composables/useConversationUI.js'
+import { ref } from 'vue'
+import LoginView from './components/auth/LoginView.vue'
+import AppMain from './components/AppMain.vue'
 
-const {
-  messages,
-  draft,
-  suggestions,
-  isEmpty,
-  isRecording,
-  isLoading,
-  hasError,
-  errorMessage,
-  applySuggestion,
-  toggleRecording,
-  sendMessage,
-  dismissError,
-} = useConversationUI()
+const isAuthenticated = ref(false)
+
+function handleLogin() {
+  isAuthenticated.value = true
+}
 </script>
-
-<style src="./styles/app.css"></style>

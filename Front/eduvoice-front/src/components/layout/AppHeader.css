@@ -1,9 +1,39 @@
 .app-header {
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 12% 50%, rgba(255, 255, 255, 0.22), transparent 55%),
+    radial-gradient(circle at 88% 50%, rgba(96, 165, 250, 0.35), transparent 50%),
+    linear-gradient(145deg, #5b21b6 0%, #7c3aed 35%, #4f46e5 68%, #2563eb 100%);
   box-shadow: var(--shadow-md);
 }
 
+.app-header__glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(40px);
+  pointer-events: none;
+}
+
+.app-header__glow--one {
+  width: 10rem;
+  height: 10rem;
+  top: -3rem;
+  right: 10%;
+  background: rgba(167, 139, 250, 0.5);
+}
+
+.app-header__glow--two {
+  width: 12rem;
+  height: 12rem;
+  bottom: -4rem;
+  left: 5%;
+  background: rgba(59, 130, 246, 0.4);
+}
+
 .app-header__inner {
+  position: relative;
+  z-index: 1;
   width: min(var(--layout-max), calc(100% - 2rem));
   margin: 0 auto;
   padding: 1rem 0;
