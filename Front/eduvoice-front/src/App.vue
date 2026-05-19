@@ -1,16 +1,20 @@
 <template>
-  <LoginView v-if="!isAuthenticated" @login="handleLogin" />
-  <AppMain v-else />
+  <LoginView v-if="!isAuthenticated" @login="handleGoogleLogin" />
+  <AppMain v-else :user="user" @logout="handleLogout" />
 </template>
 
 <script setup>
-import { ref } from 'vue'
 import LoginView from './components/auth/LoginView.vue'
 import AppMain from './components/AppMain.vue'
+import { useGoogleAuth } from './composables/useGoogleAuth.js'
 
-const isAuthenticated = ref(false)
+const { isAuthenticated, user, handleCredentialResponse, logout } = useGoogleAuth()
 
-function handleLogin() {
-  isAuthenticated.value = true
+function handleGoogleLogin(credentialResponse) {
+  handleCredentialResponse(credentialResponse)
+}
+
+function handleLogout() {
+  logout()
 }
 </script>

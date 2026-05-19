@@ -1,6 +1,6 @@
 <template>
   <div class="app-shell">
-    <AppHeader />
+    <AppHeader :user="user" @logout="handleLogout" />
 
     <main class="app-shell__main">
       <ChatView
@@ -35,6 +35,15 @@ import ChatView from './chat/ChatView.vue'
 import InputPanel from './input/InputPanel.vue'
 import { useConversationUI } from '../composables/useConversationUI.js'
 
+defineProps({
+  user: {
+    type: Object,
+    default: null,
+  },
+})
+
+const emit = defineEmits(['logout'])
+
 const {
   messages,
   draft,
@@ -49,6 +58,10 @@ const {
   sendMessage,
   dismissError,
 } = useConversationUI()
+
+function handleLogout() {
+  emit('logout')
+}
 </script>
 
 <style src="../styles/app.css"></style>
