@@ -12,7 +12,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: Front
+        working-directory: Front/eduvoice-front
 
     steps:
       - name: Checkout
