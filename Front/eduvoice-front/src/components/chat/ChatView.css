@@ -1,0 +1,12 @@
+.chat-view {
+  display: grid;
+  gap: 1rem;
+  flex: 1;
+  min-height: 18rem;
+}
+
+.chat-view__thread {
+  display: grid;
+  gap: 1.25rem;
+  align-content: start;
+}
