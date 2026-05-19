@@ -14,10 +14,7 @@
         </p>
       </div>
 
-      <button class="login-view__google" type="button" @click="$emit('login')">
-        <IconGoogle />
-        <span>Continuar con Google</span>
-      </button>
+      <div id="google-signin-button" class="login-view__google-container"></div>
 
       <p class="login-view__note">
         Accede con tu cuenta institucional para comenzar a conversar con el asistente.
@@ -27,10 +24,31 @@
 </template>
 
 <script setup>
+import { onMounted, watch } from 'vue'
 import logoUrl from '../../assets/logo.png'
-import IconGoogle from '../icons/IconGoogle.vue'
+import { useGoogleAuth } from '../../composables/useGoogleAuth.js'
 
 defineEmits(['login'])
+
+const { renderSignInButton, isInitialized } = useGoogleAuth()
+
+watch(isInitialized, (newVal) => {
+  if (newVal) {
+    console.log('Google Auth initialized, rendering button')
+    // Esperar un tick para asegurar que el DOM esté listo
+    setTimeout(() => {
+      renderSignInButton('google-signin-button')
+    }, 100)
+  }
+})
+
+onMounted(() => {
+  // Si ya está inicializado
+  if (isInitialized.value) {
+    console.log('Already initialized, rendering button immediately')
+    renderSignInButton('google-signin-button')
+  }
+})
 </script>
 
 <style src="./LoginView.css"></style>

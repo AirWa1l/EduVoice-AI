@@ -13,12 +13,33 @@
           </p>
         </div>
       </div>
+
+      <div v-if="user" class="app-header__user">
+        <img v-if="user.picture" :src="user.picture" :alt="user.name" class="app-header__avatar" />
+        <span class="app-header__user-name">{{ user.name }}</span>
+        <button class="app-header__logout" @click="handleLogout" title="Cerrar sesión">
+          ✕
+        </button>
+      </div>
     </div>
   </header>
 </template>
 
 <script setup>
 import logoUrl from '../../assets/logo.png'
+
+defineProps({
+  user: {
+    type: Object,
+    default: null,
+  },
+})
+
+const emit = defineEmits(['logout'])
+
+function handleLogout() {
+  emit('logout')
+}
 </script>
 
 <style src="./AppHeader.css"></style>
