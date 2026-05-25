@@ -1,17 +1,22 @@
 :root {
-  --color-primary: #7c3aed;
-  --color-primary-dark: #6d28d9;
-  --color-primary-light: #ede9fe;
+  --color-primary: #26658c;
+  --color-primary-dark: #023859;
+  --color-primary-light: #d9f1f7;
 
-  --color-user-bubble: #3b82f6;
-  --color-user-bubble-dark: #2563eb;
+  --color-accent: #a7ebf2;
+  --color-accent-strong: #54acbf;
+  --color-accent-deep: #011c40;
+  --color-rose-soft: #26658c;
 
-  --color-send: #60a5fa;
-  --color-send-hover: #3b82f6;
+  --color-user-bubble: #26658c;
+  --color-user-bubble-dark: #023859;
 
-  --color-success: #10b981;
-  --color-success-bg: #d1fae5;
-  --color-success-border: #6ee7b7;
+  --color-send: #54acbf;
+  --color-send-hover: #26658c;
+
+  --color-success: #0e968f;
+  --color-success-bg: #d5f7ef;
+  --color-success-border: #7de5c5;
 
   --color-recording: #ef4444;
   --color-recording-bg: #fef2f2;
@@ -22,18 +27,24 @@
   --color-error-bg: #fef2f2;
   --color-error-border: #fecaca;
 
-  --color-bg: #f3f4f6;
-  --color-surface: #ffffff;
-  --color-border: #e5e7eb;
-  --color-border-strong: #d1d5db;
+  --color-bg: #e9f5fb;
+  --color-surface: #f8fdff;
+  --color-border: #a9cfdb;
+  --color-border-strong: #82b4c6;
 
-  --color-text: #111827;
-  --color-text-secondary: #6b7280;
-  --color-text-muted: #9ca3af;
+  --color-text: #0f2c46;
+  --color-text-secondary: #315a75;
+  --color-text-muted: #4f7891;
 
-  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
-  --shadow-md: 0 4px 14px rgba(15, 23, 42, 0.08);
-  --shadow-lg: 0 10px 30px rgba(15, 23, 42, 0.1);
+  --shadow-sm: 0 3px 10px rgba(1, 28, 64, 0.18);
+  --shadow-md: 0 12px 30px rgba(1, 28, 64, 0.24);
+  --shadow-lg: 0 24px 60px rgba(1, 28, 64, 0.3);
+
+  --gradient-brand: linear-gradient(145deg, #a7ebf2 0%, #54acbf 28%, #26658c 58%, #023859 82%, #011c40 100%);
+  --gradient-page:
+    radial-gradient(circle at 10% 8%, rgba(167, 235, 242, 0.62), transparent 36%),
+    radial-gradient(circle at 82% 86%, rgba(84, 172, 191, 0.25), transparent 40%),
+    linear-gradient(160deg, #f4fbff 0%, #e6f2fa 56%, #dcebf6 100%);
 
   --radius-sm: 0.5rem;
   --radius-md: 0.75rem;

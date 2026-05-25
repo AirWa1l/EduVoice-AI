@@ -9,4 +9,9 @@
   display: grid;
   gap: 1.25rem;
   align-content: start;
+  padding: 1.1rem;
+  border-radius: var(--radius-xl);
+  border: 1px solid rgba(84, 172, 191, 0.42);
+  background: linear-gradient(180deg, rgba(251, 254, 255, 0.96), rgba(233, 244, 250, 0.94));
+  box-shadow: var(--shadow-md);
 }
