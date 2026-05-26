@@ -2,13 +2,13 @@
   display: flex;
   min-height: 100vh;
   flex-direction: column;
-  background: var(--color-bg);
+  background: var(--gradient-page);
 }
 
 .app-shell__main {
   width: min(var(--layout-max), calc(100% - 2rem));
   margin: 0 auto;
-  padding: 1.5rem 0 1rem;
+  padding: 1.5rem 0 1.25rem;
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
