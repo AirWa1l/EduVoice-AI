@@ -1,8 +1,10 @@
 .app-footer {
   margin-top: auto;
   padding: 1.25rem 1rem 1.5rem;
-  background: var(--color-surface);
-  border-top: 1px solid var(--color-border);
+  background: linear-gradient(145deg, rgba(2, 56, 89, 0.9), rgba(1, 28, 64, 0.92));
+  border-top: 1px solid rgba(167, 235, 242, 0.2);
+  backdrop-filter: blur(12px) saturate(120%);
+  -webkit-backdrop-filter: blur(12px) saturate(120%);
 }
 
 .app-footer__row {
@@ -14,7 +16,7 @@
   gap: 1rem;
   flex-wrap: wrap;
   font-size: 0.85rem;
-  color: var(--color-text-secondary);
+  color: rgba(226, 246, 252, 0.82);
 }
 
 .app-footer__project,
@@ -26,7 +28,7 @@
 }
 
 .app-footer__icon {
-  color: var(--color-primary);
+  color: #a7ebf2;
 }
 
 .app-footer__link {
@@ -34,16 +36,16 @@
   align-items: center;
   gap: 0.35rem;
   font-weight: 600;
-  color: var(--color-text);
+  color: #eaf8fd;
 }
 
 .app-footer__link:hover {
-  color: var(--color-primary);
+  color: #a7ebf2;
   text-decoration: none;
 }
 
 .app-footer__divider {
-  color: var(--color-text-muted);
+  color: rgba(167, 235, 242, 0.6);
 }
 
 .app-footer__disclaimer {
@@ -52,7 +54,7 @@
   text-align: center;
   font-size: 0.75rem;
   line-height: 1.5;
-  color: var(--color-text-muted);
+  color: rgba(218, 241, 250, 0.74);
 }
 
 @media (max-width: 640px) {

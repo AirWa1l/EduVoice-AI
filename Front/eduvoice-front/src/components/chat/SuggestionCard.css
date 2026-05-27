@@ -14,7 +14,7 @@
 }
 
 .suggestion-card:hover {
-  border-color: #c4b5fd;
+  border-color: rgba(8, 151, 157, 0.55);
   box-shadow: var(--shadow-md);
   transform: translateY(-1px);
 }

@@ -18,6 +18,54 @@ function createId() {
   return globalThis.crypto?.randomUUID?.() ?? `msg-${Date.now()}-${Math.random()}`
 }
 
+function normalizeQuestion(text) {
+  if (!text || typeof text !== 'string') {
+    return ''
+  }
+
+  return text.trim().replace(/\s+/g, ' ')
+}
+
+function cleanQuestion(text) {
+  return normalizeQuestion(text).replace(/[^\w\sáéíóúñ¿?!.,]/giu, '').trim()
+}
+
+function validateQuestion(text) {
+  const normalized = normalizeQuestion(text)
+
+  if (!normalized) {
+    return {
+      valid: false,
+      message: 'Escribe una pregunta antes de enviarla.',
+      value: '',
+    }
+  }
+
+  const cleaned = cleanQuestion(normalized)
+
+  if (!cleaned) {
+    return {
+      valid: false,
+      message: 'La pregunta no contiene texto válido.',
+      value: '',
+    }
+  }
+
+  if (cleaned.length > 500) {
+    return {
+      valid: false,
+      message: 'La pregunta supera el máximo de 500 caracteres.',
+      value: cleaned,
+    }
+  }
+
+  return {
+    valid: true,
+    message: '',
+    value: cleaned,
+  }
+}
+
 export function useConversationUI(initialUserId = null) {
   const messages = ref([])
   const draft = ref('')
@@ -108,8 +156,15 @@ export function useConversationUI(initialUserId = null) {
   }
 
   function submitUserQuery(text) {
-    const query = text.trim()
-    if (!query || isLoading.value) return
+    const { valid, message, value: query } = validateQuestion(text)
+
+    if (isLoading.value) return
+
+    if (!valid) {
+      errorMessage.value = message
+      status.value = 'error'
+      return
+    }
 
     clearError()
 
