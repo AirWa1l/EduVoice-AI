@@ -21,7 +21,7 @@
   width: 0.5rem;
   height: 0.5rem;
   border-radius: 50%;
-  background: #c4b5fd;
+  background: var(--color-primary);
   animation: typing-bounce 1.2s ease-in-out infinite;
 }
 
@@ -35,7 +35,7 @@
 
 .assistant-typing__dot:nth-child(3) {
   animation-delay: 0.3s;
-  background: var(--color-primary);
+  background: var(--color-accent-strong);
 }
 
 @keyframes typing-bounce {
