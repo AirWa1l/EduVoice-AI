@@ -25,8 +25,12 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install -r requirements.txt
+          pip install -r requirements.txt pytest
 
       - name: Validate FastAPI
         run: |
           python -c "from app.main import app"
+
+      - name: Run backend tests (pytest)
+        run: |
+          pytest app/tests -v
